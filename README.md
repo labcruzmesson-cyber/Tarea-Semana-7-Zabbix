@@ -1,9 +1,10 @@
 # Implementación de Infraestructura de Monitoreo Centralizado y Gestión Dinámica (Cisco IOS & Zabbix Server)
+[![Demostración en Video](https://img.shields.io/badge/Video-Demostración%20en%20YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/CPkYjozR0e8)
 
 **Autor:** Manuel Alejandro Cruz Messón  
 **Matrícula:** 2025-0689  
 **Asignatura:** Seguridad de Redes  
-**Enlace del Video Demostrativo:** https://youtu.be/[ID_DE_TU_VIDEO]  
+**Enlace del Video Demostrativo:** https://youtu.be/CPkYjozR0e8
 
 ---
 
@@ -39,7 +40,7 @@ Este laboratorio integra una solución integral de supervisión de infraestructu
 
 La infraestructura se compone de un segmento WAN conectado a la red de gestión física (Cloud0) y un segmento LAN corporativo estructurado bajo el prefijo `10.25.68.0/24`.
 
-[AQUI VA FOTO DE: Topología de red completa en PNETLab mostrando Cloud0, R1-Core, SW1-LAN y Zabbix Server]
+![Topología de Red](https://github.com/labcruzmesson-cyber/Tarea-Semana-7-Zabbix/blob/main/IMAGES/Topologia.png)
 
 ### Matriz de Conectividad e Interfaces
 
@@ -155,7 +156,7 @@ snmp-server contact Admin_Redes
 ### 6.1. Aprovisionamiento del Sistema Operativo Base
 El servidor Zabbix (desplegado sobre imagen Linux Appliance) se integró a la topología configurando su interfaz `eth0` como cliente dinámico para recibir los parámetros emitidos por el router Cisco.
 
-[AQUI VA FOTO DE: Consola de Zabbix Server ejecutando dhclient o reiniciando la interfaz de red]
+![Topología de Red](https://github.com/labcruzmesson-cyber/Tarea-Semana-7-Zabbix/blob/main/IMAGES/dhclient.png)
 
 ### 6.2. Registro y Enlace de Plantillas en Zabbix Frontend
 Dentro del entorno web (`http://<IP_ACCESO>/zabbix`):
@@ -171,23 +172,23 @@ Dentro del entorno web (`http://<IP_ACCESO>/zabbix`):
 * **Objetivo:** Comprobar que el servidor Zabbix adquiere automáticamente una dirección IP perteneciente al bloque dinámico configurado en Cisco IOS (`10.25.68.50/24`).
 * **Comandos probados en consola Linux:** `ip a`, `ip route show`.
 
-[AQUI VA FOTO DE: Salida de ip a en la terminal de Zabbix mostrando eth0 con la IP 10.25.68.50/24 y el gateway 10.25.68.1]
+![Topología de Red](https://github.com/labcruzmesson-cyber/Tarea-Semana-7-Zabbix/blob/main/IMAGES/ip%20a-%20ip%20show.png)
 
 * **Resultado:** La interfaz de red `eth0` tomó de manera correcta la primera IP disponible del pool (`10.25.68.50`) con máscara de subred `/24`, gateway predeterminado hacia `10.25.68.1` y servidor DNS asignado.
 
 ### 7.2. Validación de Conectividad y Consulta SNMPv2 desde Consola
 * **Objetivo:** Validar el canal bidireccional UDP 161 y confirmar que el agente Cisco responde favorablemente a consultas de objetos MIB con la comunidad configurada.
-* **Comandos probados:** `ping -c 3 10.25.68.1`, `snmpwalk -v2c -c SNMP_ITLA_RO 10.25.68.1 sysName`.
+* **Comandos probados:** `ping -c 3 10.25.68.1`, ` snmpwalk -v2c -c SNMP_ITLA_RO 10.25.68.1 1.3.6.1.2.1.1.5.0`.
 
-[AQUI VA FOTO DE: Consola de Zabbix ejecutando snmpwalk hacia el Router y Switch obteniendo el nombre del sistema]
+![Topología de Red](https://github.com/labcruzmesson-cyber/Tarea-Semana-7-Zabbix/blob/main/IMAGES/snmpwalk.png)
 
-* **Resultado:** La solicitud SNMPv2 respondió satisfactoriamente devolviendo la variable `sysName.0 = STRING: R1-Core.localdomain` y `sysName.0 = STRING: SW1-LAN` sin registrar timeouts ni paquetes descartados.
+* **Resultado:** La solicitud SNMPv2 respondió satisfactoriamente devolviendo la variable `1.3.6.1.2.1.1.5.0 = STRING: R1-Core.localdomain` y `1.3.6.1.2.1.1.5.0= STRING: SW1-LAN` sin registrar timeouts ni paquetes descartados.
 
 ### 7.3. Verificación de Disponibilidad SNMP de Hosts en Zabbix Frontend
 * **Objetivo:** Demostrar que los dispositivos de infraestructura son reconocidos como disponibles y operativos bajo el protocolo SNMP en la interfaz web de monitoreo.
 * **Ruta de verificación:** **Configuration** > **Hosts**.
 
-[AQUI VA FOTO DE: Vista de Configuration -> Hosts mostrando Router R1 y SW1-LAN con el icono SNMP en verde]
+![Topología de Red](https://github.com/labcruzmesson-cyber/Tarea-Semana-7-Zabbix/blob/main/IMAGES/hosts.png)
 
 * **Resultado:** En la columna *Availability*, ambos dispositivos presentan el icono **SNMP en verde brillante**, certificando que los ciclos periódicos de recolección se completan exitosamente hacia las IPs `10.25.68.1` y `10.25.68.2`.
 
@@ -195,7 +196,7 @@ Dentro del entorno web (`http://<IP_ACCESO>/zabbix`):
 * **Objetivo:** Validar la extracción continua de variables de rendimiento, estado físico de interfaces y metadatos de configuración en ambos dispositivos.
 * **Ruta de verificación:** **Monitoring** > **Latest data** (Filtro: `Router R1`, `SW1-LAN`).
 
-[AQUI VA FOTO DE: Pantalla de Latest Data en Zabbix desplegando Device contact, location, name, uptime y el estado operacional up de las interfaces]
+![Topología de Red](https://github.com/labcruzmesson-cyber/Tarea-Semana-7-Zabbix/blob/main/IMAGES/latestdata.png)
 
 * **Resultado:** El sistema recopiló correctamente:
   * **Device contact details:** `Admin_Redes`
@@ -208,16 +209,16 @@ Dentro del entorno web (`http://<IP_ACCESO>/zabbix`):
 * **Ruta de verificación:** **Monitoring** > **Graphs**.
 
 #### A. Tráfico en Switch SW1-LAN (`GigabitEthernet0/0` - Enlace Router)
-[AQUI VA FOTO DE: Gráfica de Zabbix mostrando el tráfico entrante y saliente en SW1-LAN interfaz Gi0/0 con picos de transferencia]
+![Topología de Red](https://github.com/labcruzmesson-cyber/Tarea-Semana-7-Zabbix/blob/main/IMAGES/SWGI00.png)
 
 #### B. Tráfico en Switch SW1-LAN (`GigabitEthernet0/1` - Enlace Servidor Zabbix)
-[AQUI VA FOTO DE: Gráfica de Zabbix mostrando el tráfico en SW1-LAN interfaz Gi0/1 correspondiente a la interacción web y polleo SNMP]
+![Topología de Red](https://github.com/labcruzmesson-cyber/Tarea-Semana-7-Zabbix/blob/main/IMAGES/SWG01.png)
 
 #### C. Tráfico en Router R1-Core (`GigabitEthernet0/1` - Enlace LAN)
-[AQUI VA FOTO DE: Gráfica de Zabbix mostrando el comportamiento del tráfico de la red interna en R1 Gi0/1]
+![Topología de Red](https://github.com/labcruzmesson-cyber/Tarea-Semana-7-Zabbix/blob/main/IMAGES/RG01.png)
 
 #### D. Tráfico en Router R1-Core (`GigabitEthernet0/0` - Enlace WAN Cloud0)
-[AQUI VA FOTO DE: Gráfica de Zabbix reflejando el consumo de ancho de banda hacia la interfaz WAN Gi0/0]
+![Topología de Red](https://github.com/labcruzmesson-cyber/Tarea-Semana-7-Zabbix/blob/main/IMAGES/RG00.png)
 
 * **Resultado:** Las cuatro gráficas exponen con nitidez la actividad de la red, registrando picos de tráfico de hasta 2 Mbps durante las transferencias iniciales de datos y manteniendo un suelo constante de telemetría SNMP.
 
